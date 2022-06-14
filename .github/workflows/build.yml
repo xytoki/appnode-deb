@@ -19,12 +19,6 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-      
-      - name: Checkout dist
-        uses: actions/checkout@v3
-        with:
-          ref: dist
-          path: dist
 
       - name: Prepare environment
         run: sudo apt-get -y install rpm yum-utils alien gnupg
@@ -43,17 +37,19 @@ jobs:
         
       - name: Convert to deb
         run: sudo alien -d -c ./*.rpm
-        
+              
+      - name: Checkout dist
+        uses: actions/checkout@v3
+        with:
+          ref: dist
+          path: dist
+      
       - name: Move new debs to dist and commit
         run: |
           cp -rn *.deb dist/
           cd dist
-          git commit -m "update"
-
-      - name: Push dist
-        uses: s0/git-publish-subdir-action@develop
-        env:
-          REPO: self
-          BRANCH: dist
-          FOLDER: dist
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          git commit -m "generated"
+          git push
