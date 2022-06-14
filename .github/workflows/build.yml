@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Prepare environment
-        run: sudo apt-get -y install rpm yum-utils alien
+        run: sudo apt-get -y install rpm yum-utils alien gnupg
 
       - name: Import repos
         run: |
@@ -29,7 +29,9 @@ jobs:
           sudo rpm -Uvh --nodeps http://dl.appnode.com/stable/centos/7/agent/x86_64/appnode-agent-release-1.2-1.el7.x86_64.rpm
           sudo rpm -Uvh --nodeps http://dl.appnode.com/stable/centos/7/agent/x86_64/appnode-extras-release-1.1-1.el7.noarch.rpm
           sudo rpm -Uvh --nodeps http://dl.appnode.com/stable/centos/7/ccenter/x86_64/appnode-ccenter-release-1.2-1.el7.x86_64.rpm
-
+          sudo gpg --import /etc/pki/rpm-gpg/RPM-GPG-KEY-appnode
+          sudo rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-appnode
+      
       - name: Download rpms
         run: repoquery -a --location | grep appnode-  | grep -v repo. | xargs -d '\n' -n1 wget --no-verbose
         
