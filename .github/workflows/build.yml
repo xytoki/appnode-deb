@@ -1,0 +1,46 @@
+name: Build DEB
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      - name: Prepare environment
+        run: sudo apt-get -y install rpm yum-utils alien
+
+      - name: Import repos
+        run: |
+          rpm -Uvh --nodeps http://repo.appnode.com/stable/el/7/x86_64/appnode-release-1.1-1.el7.noarch.rpm
+          rpm -Uvh --nodeps http://dl.appnode.com/stable/centos/7/agent/x86_64/appnode-agent-release-1.2-1.el7.x86_64.rpm
+          rpm -Uvh --nodeps http://dl.appnode.com/stable/centos/7/agent/x86_64/appnode-extras-release-1.1-1.el7.noarch.rpm
+          rpm -Uvh --nodeps http://dl.appnode.com/stable/centos/7/ccenter/x86_64/appnode-ccenter-release-1.2-1.el7.x86_64.rpm
+
+      - name: Download rpms
+        run: repoquery -a --location | grep appnode-  | grep -v repo. | xargs -d '\n' -n1 wget
+        
+      - name: Convert to deb
+        run: alien -d -c ./*.rpm
+        
+      - name: Save deb files
+        run: mkdir deb && mv *.deb deb/
+      
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v3.1.0
+        with:
+          name: debpkg
+          path: deb/**
