@@ -31,10 +31,10 @@ jobs:
           sudo rpm -Uvh --nodeps http://dl.appnode.com/stable/centos/7/ccenter/x86_64/appnode-ccenter-release-1.2-1.el7.x86_64.rpm
 
       - name: Download rpms
-        run: repoquery -a --location | grep appnode-  | grep -v repo. | xargs -d '\n' -n1 wget
+        run: repoquery -a --location | grep appnode-  | grep -v repo. | xargs -d '\n' -n1 wget --no-verbose
         
       - name: Convert to deb
-        run: alien -d -c ./*.rpm
+        run: sudo alien -d -c ./*.rpm
         
       - name: Save deb files
         run: mkdir deb && mv *.deb deb/
