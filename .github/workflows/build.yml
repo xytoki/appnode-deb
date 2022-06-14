@@ -33,10 +33,10 @@ jobs:
           sudo rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-appnode
       
       - name: Download rpms
-        run: repoquery -a --location | grep appnode-  | grep -v repo. | xargs -d '\n' -n1 wget --no-verbose
+        run: repoquery -a --location | grep appnode-  | grep -v repo. | xargs -d '\n' -n 1 -P 6 wget --no-verbose
         
       - name: Convert to deb
-        run: ls *.rpm | xargs -P 4 -n 1 sudo alien -d -c 
+        run: ls *.rpm | xargs -P 6 -n 1 sudo alien -d -c 
               
       - name: Checkout dist
         uses: actions/checkout@v3
