@@ -23,6 +23,7 @@ jobs:
       - name: Checkout dist
         uses: actions/checkout@v3
         with:
+          ref: dist
           path: dist
 
       - name: Prepare environment
